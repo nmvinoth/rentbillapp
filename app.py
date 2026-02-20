@@ -32,7 +32,7 @@ if not st.session_state.auth_ok:
 # -----------------------------------
 # PAGE CONFIG
 # -----------------------------------
-st.set_page_config(page_title="Family Rent Tax Invoice", layout="centered")
+st.set_page_config(page_title="Sulur Reliance Trends Rent Tax Invoice", layout="centered")
 
 
 # -----------------------------------
@@ -727,3 +727,4 @@ st.download_button(
     use_container_width=True
 
 )
+
