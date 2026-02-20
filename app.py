@@ -13,7 +13,7 @@ from reportlab.pdfgen import canvas
 # -----------------------------------
 # Best practice: store in Streamlit secrets, not hardcode in code.
 # In Streamlit Cloud: Settings → Secrets → APP_ACCESS_CODE="A1B2C3"
-APP_ACCESS_CODE = st.secrets.get("APP_ACCESS_CODE", "A1B2C3")  # fallback for local
+APP_ACCESS_CODE = st.secrets["APP_ACCESS_CODE"] # fallback for local
 
 if "auth_ok" not in st.session_state:
     st.session_state.auth_ok = False
@@ -725,4 +725,5 @@ st.download_button(
     file_name=file_name,
     mime="application/pdf",
     use_container_width=True
+
 )
