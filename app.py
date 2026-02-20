@@ -522,7 +522,7 @@ def make_invoice_pdf(
 # -----------------------------------
 # UI
 # -----------------------------------
-st.title("🏠 Family Rent Tax Invoice Generator")
+st.title("🏠 Sulur Reliance Trends Rent Tax Invoice Generator")
 
 st.sidebar.header("View Settings")
 desktop_layout = st.sidebar.toggle("Desktop Layout (2 columns)", value=False)
@@ -727,4 +727,5 @@ st.download_button(
     use_container_width=True
 
 )
+
 
