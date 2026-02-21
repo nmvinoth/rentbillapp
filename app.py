@@ -160,7 +160,11 @@ PEOPLE = {
     ),
     "S.N.Geetha": Person(
         name="S.N.Geetha",
-        address="No.5, Teesta Street, Third Main Road, River View Housing Society, Manapakkam, Chennai - 600125",
+        address_lines=[
+            "No. 5, Teesta Street, Third Main Road,",
+            "River View Housing Society, Manapakkam,",
+            "Chennai - 600125",
+        ],
         pan="ADAPG2263N",
         gst="33ADAPG2263N1ZQ",
         sac="997212",
@@ -172,7 +176,11 @@ PEOPLE = {
     ),
     "N.RAJENDRAN": Person(
         name="N.RAJENDRAN",
-        address="No.15, Subramaniam Layout, Ramanathapuram, Coimbatore - 641045",
+        address_lines=[
+            "No. 15, Subramaniam Layout,",
+            "Ramanathapuram,",
+            "Coimbatore - 641045",
+        ],
         pan="BIFPR0499Q",
         gst="33BIFPR0499Q1ZI",
         sac="997212",
@@ -777,6 +785,7 @@ st.download_button(
     mime="application/pdf",
     use_container_width=True
 )
+
 
 
 
