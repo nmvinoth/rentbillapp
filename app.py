@@ -512,7 +512,10 @@ if "from_date" not in st.session_state:
     st.session_state["from_date"] = DEFAULT_FROM_DATE
 if "to_date" not in st.session_state:
     st.session_state["to_date"] = DEFAULT_TO_DATE
-
+    
+if "selected_name" not in st.session_state:
+    st.session_state["selected_name"] = list(PEOPLE.keys())[0]
+    
 if st.sidebar.button("Apply Month Dates"):
     st.session_state["from_date"] = datetime.date(month_year, selected_month_num, 1)
     last_day = calendar.monthrange(month_year, selected_month_num)[1]
@@ -522,7 +525,11 @@ if st.sidebar.button("Apply Month Dates"):
 # Main inputs (single responsive layout; columns stack on mobile)
 c1, c2, c3 = st.columns([2, 1, 1])
 with c1:
-    selected_name = st.selectbox("Select Name", list(PEOPLE.keys()))
+    selected_name = st.selectbox(
+    "Select Name",
+    list(PEOPLE.keys()),
+    key="selected_name"
+    )
 with c2:
     from_date = st.date_input(
         "From Date",
@@ -728,4 +735,5 @@ st.download_button(
     mime="application/pdf",
     use_container_width=True
 )
+
 
