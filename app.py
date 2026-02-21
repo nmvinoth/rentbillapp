@@ -719,8 +719,8 @@ preview_html = f"""
         <div><b>Service Accounting Code (SAC)</b></div><div class="c">:</div><div>{person.sac}</div>
         <div><b>Description of Service Accounting Code (SAC)</b></div><div class="c">:</div><div>{person.desc}</div>
         <div><b>Location of Service Provided</b></div><div class="c">:</div><div>{person.location}</div>
-        <div><b>State Code of Service location</b></div><div class="c">:</div><div>{person.state_code}</div>
-        <div><b>State Name of Service location</b></div><div class="c">:</div><div>{person.state_name}</div>
+        <div><b>State Code of Service Location</b></div><div class="c">:</div><div>{person.state_code}</div>
+        <div><b>State Name of Service Location</b></div><div class="c">:</div><div>{person.state_name}</div>
       </div>
     </div>
 
@@ -790,6 +790,7 @@ st.download_button(
     mime="application/pdf",
     use_container_width=True
 )
+
 
 
 
