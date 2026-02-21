@@ -298,40 +298,23 @@ def make_invoice_pdf(
     def wrap(text_in, font_name, font_size, max_w):
         c.setFont(font_name, font_size)
     
-        protected = (text_in or "")
+        words = (text_in or "").split()
+        lines = []
+        current = ""
     
-        # 1) Protect pincodes so 600 018 doesn't split: 600018 / 600 018 -> 600~018
-        protected = PINCODE_RE.sub(r"\1~\2", protected)
-    
-        # 2) Keep " - 600~018" together with the preceding city token:
-        # "CHENNAI - 600~018" -> "CHENNAI~-~600~018"
-        protected = re.sub(r"\s*-\s*(\d{3})~(\d{3})", r"~-~\1~\2", protected)
-    
-        # 3) Prevent splits like "181. TTK" or "181.TTK" across lines
-        # Normalize any "181. T" -> "181.T"
-        protected = re.sub(r"(\d+)\.\s*([A-Za-z])", r"\1.\2", protected)
-        # Protect "181.T" so wrapper doesn't break after "181."
-        protected = re.sub(r"(\d+)\.([A-Za-z])", r"\1~.\2", protected)
-    
-        # Wrap
-        words = protected.split()
-        lines, cur = [], []
-        for w in words:
-            trial = (" ".join(cur + [w])).strip()
-            if c.stringWidth(trial, font_name, font_size) <= max_w:
-                cur.append(w)
+        for word in words:
+            test_line = f"{current} {word}".strip()
+            if c.stringWidth(test_line, font_name, font_size) <= max_w:
+                current = test_line
             else:
-                if cur:
-                    lines.append(" ".join(cur))
-                    cur = [w]
-                else:
-                    lines.append(w)
-                    cur = []
-        if cur:
-            lines.append(" ".join(cur))
+                if current:
+                    lines.append(current)
+                current = word
     
-        # Restore protected markers
-        return [ln.replace("~-~", " - ").replace("~.", ".").replace("~", " ") for ln in lines]
+        if current:
+            lines.append(current)
+    
+        return lines
 
     # Frame
     c.setStrokeColor(border)
@@ -367,9 +350,10 @@ def make_invoice_pdf(
     addr_y -= 20
 
     provider_addr = normalize_text_for_display(person.address, for_html=False)
-    for ln in wrap(provider_addr, "Helvetica", 10, (header_right_x - 24) - header_left_x):
+    address_width = right - left - 220   # wider area like preview
+    for ln in wrap(provider_addr, "Helvetica", 10, address_width):
         draw_txt(header_left_x, addr_y, ln, size=10)
-        addr_y -= 16
+        addr_y -= 18
     addr_y -= 8
 
     y = addr_y
@@ -762,6 +746,7 @@ st.download_button(
     mime="application/pdf",
     use_container_width=True
 )
+
 
 
 
