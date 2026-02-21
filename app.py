@@ -155,7 +155,7 @@ PEOPLE = {
     ),
     "S.N.Geetha": Person(
         name="S.N.Geetha",
-        address="No.5, Third Main Road, Teesta Street, River View Housing Society, Manapakkam, Chennai - 600125",
+        address="No.5, Teesta Street, Third Main Road, River View Housing Society, Manapakkam, Chennai - 600125",
         pan="ADAPG2263N",
         gst="33ADAPG2263N1ZQ",
         sac="997212",
@@ -762,6 +762,7 @@ st.download_button(
     mime="application/pdf",
     use_container_width=True
 )
+
 
 
 
