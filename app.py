@@ -135,7 +135,7 @@ RECIPIENT = {
     "address_lines": [
         "89, A1 Tower, Dr Radhakrishnan Salai",
         "Mylapore, Chennai - 600004.",
-        "Tamilnadu",
+        "TamilNadu",
     ],
     "gstin": "33AAJCR6636B1ZJ",
 }
@@ -150,7 +150,7 @@ PEOPLE = {
         desc="Rental or leasing services involving own or leased non-residential property",
         location="SULUR, COIMBATORE DIST., TAMIL NADU",
         state_code="33",
-        state_name="Tamilnadu",
+        state_name="TamilNadu",
         default_rent=223667.53,
     ),
     "S.N.Geetha": Person(
@@ -162,7 +162,7 @@ PEOPLE = {
         desc="Rental or leasing services involving own or leased non-residential property",
         location="SULUR, COIMBATORE DIST., TAMIL NADU",
         state_code="33",
-        state_name="Tamilnadu",
+        state_name="TamilNadu",
         default_rent=223667.53,
     ),
     "N.RAJENDRAN": Person(
@@ -174,7 +174,7 @@ PEOPLE = {
         desc="Rental or leasing services involving own or leased non-residential property",
         location="SULUR, COIMBATORE DIST., TAMIL NADU",
         state_code="33",
-        state_name="Tamilnadu",
+        state_name="TamilNadu",
         default_rent=149112.45,
     ),
 }
@@ -743,6 +743,7 @@ st.download_button(
     mime="application/pdf",
     use_container_width=True
 )
+
 
 
 
