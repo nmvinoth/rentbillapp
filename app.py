@@ -245,21 +245,25 @@ def wrap_lines_pdf(c: canvas.Canvas, text: str, font_name: str, font_size: int, 
 PINCODE_RE = re.compile(r"(?<!\d)(\d{3})\s*(\d{3})(?!\d)")
 SPACE_BEFORE_PUNCT_RE = re.compile(r"\s+([,\.])")
 
-def format_indian_pincode(text: str) -> str:
-    """Ensures 6-digit Indian pin codes are shown as '123 456' (space after 3 digits)."""
+def format_indian_pincode(text: str, for_html: bool = False) -> str:
+    """Ensures 6-digit Indian pin codes are shown as '123 456' (space after 3 digits).
+       If for_html=True, uses non-breaking space so it doesn't wrap: '123&nbsp;456'
+    """
     if not text:
         return text
-    return PINCODE_RE.sub(r"\1 \2", text)
+    sep = "&nbsp;" if for_html else " "
+    return PINCODE_RE.sub(rf"\1{sep}\2", text)
 
-def normalize_text_for_display(text: str) -> str:
+def normalize_text_for_display(text: str, for_html: bool = False) -> str:
     """
     - Removes spaces before comma/full stop so wrapping won't start a new line with ',' or '.'
     - Applies Indian pincode spacing.
+    - If for_html=True, pincode uses non-breaking space to avoid messy wrap.
     """
     if not text:
         return text
-    t = SPACE_BEFORE_PUNCT_RE.sub(r"\1", text)      # "Chennai ," -> "Chennai,"
-    t = format_indian_pincode(t)                    # "600018" -> "600 018"
+    t = SPACE_BEFORE_PUNCT_RE.sub(r"\1", text)                  # "Chennai ," -> "Chennai,"
+    t = format_indian_pincode(t, for_html=for_html)             # "600125" -> "600&nbsp;125" (HTML) or "600 125" (PDF)
     return t
 # -----------------------------------
 # PDF (reduced margins + signature bottom-right)
@@ -663,8 +667,8 @@ preview_css = """
 </style>
 """
 person_address_preview = normalize_text_for_display(person.address)
-recipient_lines_preview = "<br>".join(normalize_text_for_display(x) for x in RECIPIENT["address_lines"])
-address_preview = normalize_text_for_display(person.address)
+recipient_lines_preview = "<br>".join(normalize_text_for_display(x, for_html=True) for x in RECIPIENT["address_lines"])
+address_preview = normalize_text_for_display(person.address, for_html=True)
 
 if person.name == "S.N.Geetha":
     address_preview = address_preview.replace(
@@ -782,6 +786,7 @@ st.download_button(
     use_container_width=True
 
 )
+
 
 
 
