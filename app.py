@@ -450,7 +450,7 @@ def make_invoice_pdf(
     c.setFillColor(text)
     set_font(False, 10)
 
-    rent_desc = f"RENT FOR THE PERIOD {from_date.strftime('%d.%m.%Y')} TO {to_date.strftime('%d.%m.%Y')}"
+    rent_desc = f"RENT FOR THE PERIOD {from_date.strftime('%d/%m/%Y')} TO {to_date.strftime('%d/%m/%Y')}"
     c.drawString(table_x + 12, y - header_h - 20, rent_desc)
     c.drawRightString(table_x + table_w - 12, y - header_h - 20, format_money(rent))
 
@@ -636,7 +636,7 @@ preview_html = f"""
       <div class="inv-note">Original for Recipient</div>
       <div class="inv-meta">
         <div class="inv-meta-row"><b>Invoice No.</b><span>{invoice_no}</span></div>
-        <div class="inv-meta-row"><b>Date</b><span>{invoice_date.strftime("%d.%m.%Y")}</span></div>
+        <div class="inv-meta-row"><b>Date</b><span>{invoice_date.strftime("%d/%m/%Y")}</span></div>
       </div>
     </div>
   </div>
@@ -668,7 +668,7 @@ preview_html = f"""
       <div class="thead"><div>Particulars</div><div>Amt Rs</div></div>
 
       <div class="trow">
-        <div class="wdesc">RENT FOR THE PERIOD {from_date.strftime("%d.%m.%Y")} TO {to_date.strftime("%d.%m.%Y")}</div>
+        <div class="wdesc">RENT FOR THE PERIOD {from_date.strftime("%d/%m/%Y")} TO {to_date.strftime("%d/%m/%Y")}</div>
         <div class="wamt">{format_money(rent)}</div>
       </div>
       <div class="trow">
@@ -727,6 +727,7 @@ st.download_button(
     use_container_width=True
 
 )
+
 
 
 
