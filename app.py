@@ -134,15 +134,15 @@ RECIPIENT = {
     "name": "Reliance Projects and Property Management Services Ltd",
     "address_lines": [
         "89, A1 Tower, Dr Radhakrishnan Salai",
-        "Mylapore, Chennai - 600 004",
+        "Mylapore, Chennai - 600 004,",
         "Tamilnadu",
     ],
     "gstin": "33AAJCR6636B1ZJ",
 }
 
 PEOPLE = {
-    "S.N. PREMA": Person(
-        name="S.N. PREMA",
+    "S.N.PREMA": Person(
+        name="S.N.PREMA",
         address="10. RAMS APARTMENT, 181.TTK ROAD, ALWARPET, CHENNAI 600018",
         pan="BXNPP2277D",
         gst="33BXNPP2277D1ZD",
@@ -775,6 +775,7 @@ st.download_button(
     use_container_width=True
 
 )
+
 
 
 
