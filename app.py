@@ -134,7 +134,7 @@ RECIPIENT = {
     "name": "Reliance Projects and Property Management Services Ltd,",
     "address_lines": [
         "89, A1 Tower, Dr Radhakrishnan Salai,",
-        "Mylapore, Chennai - 600004.",
+        "Mylapore, Chennai - 600004",
         "Tamil Nadu",
     ],
     "gstin": "33AAJCR6636B1ZJ",
@@ -446,7 +446,12 @@ def make_invoice_pdf(
 
     kv("Service Accounting Code (SAC)", person.sac, extra_after=8)
     kv("Description of Service Accounting Code (SAC)", person.desc, extra_after=16)
-    kv("Location of service provided", person.location, extra_after=10)
+    # Location (force single line)
+    draw_txt(label_x, y, "Location of service provided", size=10, bold=False)
+    draw_txt(colon_x, y, ":", size=10, bold=False, col=colors.HexColor("#666666"))
+    
+    draw_txt(value_x, y, person.location, size=10, bold=False)
+    y -= 20
     kv("State code of service location", person.state_code, extra_after=10)
     kv("State name of service location", person.state_name, extra_after=12)
 
@@ -785,6 +790,7 @@ st.download_button(
     mime="application/pdf",
     use_container_width=True
 )
+
 
 
 
