@@ -134,8 +134,8 @@ RECIPIENT = {
     "name": "Reliance Projects and Property Management Services Ltd",
     "address_lines": [
         "89, A1 Tower, Dr Radhakrishnan Salai",
-        "Mylapore, Chennai",
-        "Tamilnadu - 600 004",
+        "Mylapore, Chennai - 600 004",
+        "Tamilnadu",
     ],
     "gstin": "33AAJCR6636B1ZJ",
 }
@@ -775,6 +775,7 @@ st.download_button(
     use_container_width=True
 
 )
+
 
 
 
