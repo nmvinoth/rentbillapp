@@ -7,6 +7,7 @@ import streamlit.components.v1 as components
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
+import re
 
 # -----------------------------------
 # SIMPLE ACCESS CODE (6 chars)
@@ -241,7 +242,25 @@ def wrap_lines_pdf(c: canvas.Canvas, text: str, font_name: str, font_size: int, 
         lines.append(" ".join(cur))
     return lines
 
+PINCODE_RE = re.compile(r"(?<!\d)(\d{3})\s*(\d{3})(?!\d)")
+SPACE_BEFORE_PUNCT_RE = re.compile(r"\s+([,\.])")
 
+def format_indian_pincode(text: str) -> str:
+    """Ensures 6-digit Indian pin codes are shown as '123 456' (space after 3 digits)."""
+    if not text:
+        return text
+    return PINCODE_RE.sub(r"\1 \2", text)
+
+def normalize_text_for_display(text: str) -> str:
+    """
+    - Removes spaces before comma/full stop so wrapping won't start a new line with ',' or '.'
+    - Applies Indian pincode spacing.
+    """
+    if not text:
+        return text
+    t = SPACE_BEFORE_PUNCT_RE.sub(r"\1", text)      # "Chennai ," -> "Chennai,"
+    t = format_indian_pincode(t)                    # "600018" -> "600 018"
+    return t
 # -----------------------------------
 # PDF (reduced margins + signature bottom-right)
 # -----------------------------------
@@ -357,7 +376,8 @@ def make_invoice_pdf(
 
     addr_y -= 20  # spacing after name
 
-    for ln in wrap(person.address, "Helvetica", 10, (header_right_x - 24) - header_left_x):
+    provider_addr = normalize_text_for_display(person.address)
+    for ln in wrap(provider_addr, "Helvetica", 10, (header_right_x - 24) - header_left_x):
         draw_txt(header_left_x, addr_y, ln, size=10)
         addr_y -= 16  # increased line height
 
@@ -381,7 +401,7 @@ def make_invoice_pdf(
     y -= 16   # more gap after bold name
 
     for line in RECIPIENT["address_lines"]:
-        draw_txt(left + 18, y, line, size=10)
+        draw_txt(left + 18, y, normalize_text_for_display(line), size=10)
         y -= 15   # was 12 → more vertical air
 
     y -= 8   # space before GSTIN line
@@ -642,6 +662,8 @@ preview_css = """
   .sigbox b{ color:#2a3b57; }
 </style>
 """
+person_address_preview = normalize_text_for_display(person.address)
+recipient_lines_preview = "<br>".join(normalize_text_for_display(x) for x in RECIPIENT["address_lines"])
 
 preview_html = f"""
 <!doctype html>
@@ -654,7 +676,7 @@ preview_html = f"""
   <div class="inv-top">
     <div class="inv-top-left">
       <div><b>Name: {person.name}</b></div>
-      <div>{person.address}</div>
+      <div>{person_address_preview}</div>
     </div>
 
     <div class="inv-top-right">
@@ -671,7 +693,7 @@ preview_html = f"""
     <div class="section">
       <div class="section-title">Name & Address of service recipient</div>
       <div class="lines"><b>{RECIPIENT["name"]}</b><br>
-        {"<br>".join(RECIPIENT["address_lines"])}
+        {recipient_lines_preview}
       </div>
       <div class="lines" style="margin-top:10px;">   <b>GSTIN of recipient :</b> <b>{RECIPIENT["gstin"]}</b> </div>
     </div>
@@ -753,6 +775,7 @@ st.download_button(
     use_container_width=True
 
 )
+
 
 
 
