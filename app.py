@@ -119,7 +119,7 @@ st.markdown(DOWNLOAD_BTN_CSS, unsafe_allow_html=True)
 @dataclass
 class Person:
     name: str
-    address: str
+    address_lines: list[str]
     pan: str
     gst: str
     sac: str
@@ -131,9 +131,9 @@ class Person:
 
 
 RECIPIENT = {
-    "name": "Reliance Projects and Property Management Services Ltd",
+    "name": "Reliance Projects and Property Management Services Ltd,",
     "address_lines": [
-        "89, A1 Tower, Dr Radhakrishnan Salai",
+        "89, A1 Tower, Dr Radhakrishnan Salai,",
         "Mylapore, Chennai - 600004.",
         "Tamil Nadu",
     ],
@@ -143,7 +143,12 @@ RECIPIENT = {
 PEOPLE = {
     "S.N.PREMA": Person(
         name="S.N.PREMA",
-        address="10. RAMS APARTMENT, 181.TTK ROAD, ALWARPET, CHENNAI - 600018",
+        address_lines=[
+            "10. RAMS APARTMENT," 
+            "181.TTK ROAD,",
+            "ALWARPET,",
+            "CHENNAI - 600018",
+        ],
         pan="BXNPP2277D",
         gst="33BXNPP2277D1ZD",
         sac="997212",
@@ -373,11 +378,11 @@ def make_invoice_pdf(
     draw_txt(header_left_x, addr_y, f"Name: {person.name}", size=12, bold=True)
     addr_y -= 20
 
-    provider_addr = normalize_text_for_display(person.address, for_html=False)
+    # provider_addr = normalize_text_for_display(person.address, for_html=False)
     address_width = right - left - 220   # wider area like preview
-    for ln in wrap(provider_addr, "Helvetica", 10, address_width):
-        draw_txt(header_left_x, addr_y, ln, size=10)
-        addr_y -= 18
+    for line in person.address_lines:
+        draw_txt(header_left_x, addr_y, normalize_text_for_display(line, for_html=False), size=10)
+        addr_y -= 16
     addr_y -= 8
 
     y = addr_y
@@ -648,14 +653,16 @@ preview_css = """
 """
 
 recipient_lines_preview = "<br>".join(normalize_text_for_display(x, for_html=True) for x in RECIPIENT["address_lines"])
-address_preview = normalize_text_for_display(person.address, for_html=True)
+address_preview = "<br>".join(
+    normalize_text_for_display(x, for_html=True) for x in person.address_lines
+)
 
-if person.name == "S.N.Geetha":
-    address_preview = address_preview.replace(
-        "River View Housing Society",
-        "River&nbsp;View&nbsp;Housing&nbsp;Society"
-    )
-    address_preview = address_preview.replace(", Chennai", ",<br>Chennai")
+# if person.name == "S.N.Geetha":
+#     address_preview = address_preview.replace(
+#         "River View Housing Society",
+#         "River&nbsp;View&nbsp;Housing&nbsp;Society"
+#     )
+#     address_preview = address_preview.replace(", Chennai", ",<br>Chennai")
 
 preview_html = f"""
 <!doctype html>
@@ -770,6 +777,7 @@ st.download_button(
     mime="application/pdf",
     use_container_width=True
 )
+
 
 
 
