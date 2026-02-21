@@ -148,7 +148,7 @@ PEOPLE = {
         gst="33BXNPP2277D1ZD",
         sac="997212",
         desc="Rental or leasing services involving own or leased non-residential property",
-        location="SULUR, COIMBATORE DIST., TAMIL NADU",
+        location="SULUR, COIMBATORE - 641 402, TAMIL NADU",
         state_code="33",
         state_name="Tamil Nadu",
         default_rent=223667.53,
@@ -160,7 +160,7 @@ PEOPLE = {
         gst="33ADAPG2263N1ZQ",
         sac="997212",
         desc="Rental or leasing services involving own or leased non-residential property",
-        location="SULUR, COIMBATORE DIST., TAMIL NADU",
+        location="SULUR, COIMBATORE - 641 402, TAMIL NADU",
         state_code="33",
         state_name="Tamil Nadu",
         default_rent=223667.53,
@@ -172,7 +172,7 @@ PEOPLE = {
         gst="33BIFPR0499Q1ZI",
         sac="997212",
         desc="Rental or leasing services involving own or leased non-residential property",
-        location="SULUR, COIMBATORE DIST., TAMIL NADU",
+        location="SULUR, COIMBATORE - 641 402, TAMIL NADU",
         state_code="33",
         state_name="Tamil Nadu",
         default_rent=149112.45,
@@ -762,6 +762,7 @@ st.download_button(
     mime="application/pdf",
     use_container_width=True
 )
+
 
 
 
