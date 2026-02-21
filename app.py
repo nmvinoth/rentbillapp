@@ -521,7 +521,19 @@ def make_invoice_pdf(
 # -----------------------------------
 # UI (Single Layout + FY/Month Picker)
 # -----------------------------------
-st.title("🏠 Sulur Trends Rent Invoice Generator")
+st.markdown(
+    """
+    <h1 style="
+        white-space: nowrap;
+        font-size: 28px;
+        font-weight: 800;
+        margin-bottom: 10px;
+    ">
+        🏠 Sulur Trends Rent Invoice Generator
+    </h1>
+    """,
+    unsafe_allow_html=True
+)
 
 # Sidebar FY + Month
 st.sidebar.header("Period Quick Select")
@@ -790,6 +802,7 @@ st.download_button(
     mime="application/pdf",
     use_container_width=True
 )
+
 
 
 
