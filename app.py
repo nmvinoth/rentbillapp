@@ -386,7 +386,8 @@ def make_invoice_pdf(
 
     y -= 8   # space before GSTIN line
 
-    draw_txt(left + 18, y, f"GSTIN of recipient :   {RECIPIENT['gstin']}", size=10, bold=False)
+    draw_txt(left + 18, y, "GSTIN of recipient :", size=10, bold=False)
+    draw_txt(left + 170, y, RECIPIENT['gstin'], size=10, bold=True)
 
     y -= 18  # more space before next divider
 
@@ -736,6 +737,7 @@ st.download_button(
     use_container_width=True
 
 )
+
 
 
 
