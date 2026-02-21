@@ -347,7 +347,7 @@ def make_invoice_pdf(
     c.roundRect(header_right_x, meta_y, header_right_w, meta_h, 10, stroke=1, fill=1)
 
     draw_txt(header_right_x + 14, meta_y + 34, f"Invoice No.   {invoice_no}", size=10, bold=True)
-    draw_txt(header_right_x + 14, meta_y + 16, f"Date: {invoice_date.strftime('%d.%m.%Y')}", size=10, bold=True)
+    draw_txt(header_right_x + 14, meta_y + 16, f"Date: {invoice_date.strftime('%d/%m/%Y')}", size=10, bold=True)
 
     # Left provider name/address
     # --- Provider name/address (header left block) ---
@@ -727,6 +727,7 @@ st.download_button(
     use_container_width=True
 
 )
+
 
 
 
