@@ -712,10 +712,9 @@ preview_html = f"""
 """
 
 components.html(
-    preview_html,
+    preview_html + f"<!-- refresh:{selected_name}|{from_date}|{to_date}|{invoice_no} -->",
     height=920,
-    scrolling=True,
-    key=f"preview_{selected_name}_{from_date}_{to_date}_{invoice_no}"
+    scrolling=True
 )
 
 # PDF
@@ -740,6 +739,7 @@ st.download_button(
     mime="application/pdf",
     use_container_width=True
 )
+
 
 
 
