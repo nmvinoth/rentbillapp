@@ -664,6 +664,13 @@ preview_css = """
 """
 person_address_preview = normalize_text_for_display(person.address)
 recipient_lines_preview = "<br>".join(normalize_text_for_display(x) for x in RECIPIENT["address_lines"])
+address_preview = normalize_text_for_display(person.address)
+
+if person.name == "S.N.Geetha":
+    address_preview = address_preview.replace(
+        "River View Housing Society",
+        "River&nbsp;View&nbsp;Housing&nbsp;Society"
+    )
 
 preview_html = f"""
 <!doctype html>
@@ -676,7 +683,7 @@ preview_html = f"""
   <div class="inv-top">
     <div class="inv-top-left">
       <div><b>Name: {person.name}</b></div>
-      <div>{person_address_preview}</div>
+      <div>{address_preview}</div>
     </div>
 
     <div class="inv-top-right">
@@ -775,6 +782,7 @@ st.download_button(
     use_container_width=True
 
 )
+
 
 
 
