@@ -143,7 +143,7 @@ RECIPIENT = {
 PEOPLE = {
     "S.N.PREMA": Person(
         name="S.N.PREMA",
-        address="10. RAMS APARTMENT, 181.TTK ROAD, ALWARPET, CHENNAI 600018",
+        address="10. RAMS APARTMENT, 181.TTK ROAD, ALWARPET, CHENNAI - 600018",
         pan="BXNPP2277D",
         gst="33BXNPP2277D1ZD",
         sac="997212",
@@ -155,7 +155,7 @@ PEOPLE = {
     ),
     "S.N.Geetha": Person(
         name="S.N.Geetha",
-        address="No.5, Third Main Road, Teesta Street, River View Housing Society, Manapakkam, Chennai",
+        address="No.5, Third Main Road, Teesta Street, River View Housing Society, Manapakkam, Chennai - 600125",
         pan="ADAPG2263N",
         gst="33ADAPG2263N1ZQ",
         sac="997212",
@@ -782,6 +782,7 @@ st.download_button(
     use_container_width=True
 
 )
+
 
 
 
