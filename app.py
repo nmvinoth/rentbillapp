@@ -211,10 +211,10 @@ def number_to_words_indian(n: int) -> str:
     if thousand: parts.append(f"{_two_digits(thousand)} Thousand")
     if hundred: parts.append(f"{ONES[hundred]} Hundred")
     if n:
-    if hundred:
-        parts.append("and " + _two_digits(n))
-    else:
-        parts.append(_two_digits(n))
+        if hundred:
+            parts.append("and " + _two_digits(n))
+        else:
+            parts.append(_two_digits(n))
     return " ".join([p for p in parts if p]).strip()
 
 def format_money(x: float) -> str:
@@ -793,6 +793,7 @@ st.download_button(
     use_container_width=True
 
 )
+
 
 
 
