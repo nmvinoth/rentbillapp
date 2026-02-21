@@ -298,23 +298,47 @@ def make_invoice_pdf(
     def wrap(text_in, font_name, font_size, max_w):
         c.setFont(font_name, font_size)
     
-        words = (text_in or "").split()
+        s = (text_in or "").strip()
+    
+        # Protect pincodes so 600 018 never splits
+        s = PINCODE_RE.sub(r"\1~\2", s)
+    
+        # Normalize "181. TTK" -> "181.TTK" (avoid odd breaks)
+        s = re.sub(r"(\d+)\.\s*([A-Za-z])", r"\1.\2", s)
+    
+        # Encourage wrapping at commas and hyphens by ensuring spaces after them
+        s = s.replace(",", ", ")
+        s = re.sub(r"\s*-\s*", " - ", s)
+    
+        words = s.split()
         lines = []
-        current = ""
+        cur = ""
     
-        for word in words:
-            test_line = f"{current} {word}".strip()
-            if c.stringWidth(test_line, font_name, font_size) <= max_w:
-                current = test_line
+        for w in words:
+            test = (cur + " " + w).strip()
+            if c.stringWidth(test, font_name, font_size) <= max_w:
+                cur = test
             else:
-                if current:
-                    lines.append(current)
-                current = word
+                if cur:
+                    lines.append(cur)
+                    cur = w
+                else:
+                    # Single "word" longer than max width (rare) -> hard split
+                    chunk = ""
+                    for ch in w:
+                        test2 = chunk + ch
+                        if c.stringWidth(test2, font_name, font_size) <= max_w:
+                            chunk = test2
+                        else:
+                            lines.append(chunk)
+                            chunk = ch
+                    cur = chunk
     
-        if current:
-            lines.append(current)
+        if cur:
+            lines.append(cur)
     
-        return lines
+        # Restore pin protection
+        return [ln.replace("~", " ") for ln in lines]
 
     # Frame
     c.setStrokeColor(border)
@@ -746,6 +770,7 @@ st.download_button(
     mime="application/pdf",
     use_container_width=True
 )
+
 
 
 
