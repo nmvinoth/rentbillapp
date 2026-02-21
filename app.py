@@ -151,7 +151,7 @@ PEOPLE = {
         location="SULUR, COIMBATORE DIST., TAMIL NADU",
         state_code="33",
         state_name="Tamilnadu",
-        default_rent=194494.00,
+        default_rent=223667.53,
     ),
     "S.N.Geetha": Person(
         name="S.N.Geetha",
@@ -163,7 +163,7 @@ PEOPLE = {
         location="SULUR, COIMBATORE DIST., TAMIL NADU",
         state_code="33",
         state_name="Tamilnadu",
-        default_rent=194494.00,
+        default_rent=223667.53,
     ),
     "N.RAJENDRAN": Person(
         name="N.RAJENDRAN",
@@ -175,7 +175,7 @@ PEOPLE = {
         location="SULUR, COIMBATORE DIST., TAMIL NADU",
         state_code="33",
         state_name="Tamilnadu",
-        default_rent=129662.00,
+        default_rent=149112.45,
     ),
 }
 
@@ -793,6 +793,7 @@ st.download_button(
     use_container_width=True
 
 )
+
 
 
 
