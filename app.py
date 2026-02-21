@@ -677,7 +677,7 @@ if person.name == "S.N.Geetha":
         "River&nbsp;View&nbsp;Housing&nbsp;Society"
     )
     # Force a clean break so "Chennai - 600 125" starts on next line
-    address_preview = address_preview.replace(", Chennai", "<br>Chennai")
+    address_preview = address_preview.replace(", Chennai", ",<br>Chennai")
 
 preview_html = f"""
 <!doctype html>
@@ -789,6 +789,7 @@ st.download_button(
     use_container_width=True
 
 )
+
 
 
 
