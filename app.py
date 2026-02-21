@@ -452,8 +452,8 @@ def make_invoice_pdf(
     
     draw_txt(value_x, y, person.location, size=9, bold=False)
     y -= 20
-    kv("State code of service location", person.state_code, extra_after=10)
-    kv("State name of service location", person.state_name, extra_after=12)
+    kv("State Code of Service Location", person.state_code, extra_after=10)
+    kv("State Name of Service Location", person.state_name, extra_after=12)
 
     y -= 8
 
@@ -790,6 +790,7 @@ st.download_button(
     mime="application/pdf",
     use_container_width=True
 )
+
 
 
 
