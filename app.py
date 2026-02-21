@@ -517,10 +517,14 @@ if "selected_name" not in st.session_state:
     st.session_state["selected_name"] = list(PEOPLE.keys())[0]
     
 if st.sidebar.button("Apply Month Dates"):
+    # preserve current person selection
+    st.session_state["selected_name"] = st.session_state.get("selected_name", list(PEOPLE.keys())[0])
+
+    # apply month date range
     st.session_state["from_date"] = datetime.date(month_year, selected_month_num, 1)
     last_day = calendar.monthrange(month_year, selected_month_num)[1]
     st.session_state["to_date"] = datetime.date(month_year, selected_month_num, last_day)
-    st.rerun()
+    # no st.rerun() needed — Streamlit reruns automatically after button click
 
 # Main inputs (single responsive layout; columns stack on mobile)
 c1, c2, c3 = st.columns([2, 1, 1])
@@ -739,6 +743,7 @@ st.download_button(
     mime="application/pdf",
     use_container_width=True
 )
+
 
 
 
