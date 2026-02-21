@@ -1,4 +1,6 @@
 import datetime
+import calendar
+import re
 from dataclasses import dataclass
 from io import BytesIO
 
@@ -7,14 +9,13 @@ import streamlit.components.v1 as components
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
-import re
 
 # -----------------------------------
 # SIMPLE ACCESS CODE (6 chars)
 # -----------------------------------
 # Best practice: store in Streamlit secrets, not hardcode in code.
 # In Streamlit Cloud: Settings → Secrets → APP_ACCESS_CODE="A1B2C3"
-APP_ACCESS_CODE = st.secrets["APP_ACCESS_CODE"] # fallback for local
+APP_ACCESS_CODE = st.secrets["APP_ACCESS_CODE"]  # fallback for local
 
 if "auth_ok" not in st.session_state:
     st.session_state.auth_ok = False
@@ -29,12 +30,11 @@ if not st.session_state.auth_ok:
         else:
             st.error("Invalid access code.")
     st.stop()
-    
+
 # -----------------------------------
 # PAGE CONFIG
 # -----------------------------------
 st.set_page_config(page_title="Sulur Reliance Trends Rent Tax Invoice", layout="centered")
-
 
 # -----------------------------------
 # APP UI CSS (Streamlit page + KPI cards)
@@ -134,7 +134,7 @@ RECIPIENT = {
     "name": "Reliance Projects and Property Management Services Ltd",
     "address_lines": [
         "89, A1 Tower, Dr Radhakrishnan Salai",
-        "Mylapore, Chennai - 600 004,",
+        "Mylapore, Chennai - 600004.",
         "Tamilnadu",
     ],
     "gstin": "33AAJCR6636B1ZJ",
@@ -179,7 +179,6 @@ PEOPLE = {
     ),
 }
 
-
 # -----------------------------------
 # HELPERS
 # -----------------------------------
@@ -206,10 +205,14 @@ def number_to_words_indian(n: int) -> str:
     n %= 1000
     hundred = n // 100
     n %= 100
-    if crore: parts.append(f"{number_to_words_indian(crore)} Crore")
-    if lakh: parts.append(f"{_two_digits(lakh)} Lakh")
-    if thousand: parts.append(f"{_two_digits(thousand)} Thousand")
-    if hundred: parts.append(f"{ONES[hundred]} Hundred")
+    if crore:
+        parts.append(f"{number_to_words_indian(crore)} Crore")
+    if lakh:
+        parts.append(f"{_two_digits(lakh)} Lakh")
+    if thousand:
+        parts.append(f"{_two_digits(thousand)} Thousand")
+    if hundred:
+        parts.append(f"{ONES[hundred]} Hundred")
     if n:
         if hundred:
             parts.append("and " + _two_digits(n))
@@ -227,50 +230,27 @@ def invoice_seq_and_fy(dt: datetime.date):
     seq = (month - 4 + 1) if month >= 4 else (month + 9)
     return seq, fy_label
 
-def wrap_lines_pdf(c: canvas.Canvas, text: str, font_name: str, font_size: int, max_width: float):
-    c.setFont(font_name, font_size)
-    words = text.split()
-    lines, cur = [], []
-    for w in words:
-        trial = (" ".join(cur + [w])).strip()
-        if c.stringWidth(trial, font_name, font_size) <= max_width:
-            cur.append(w)
-        else:
-            if cur:
-                lines.append(" ".join(cur))
-                cur = [w]
-            else:
-                lines.append(w)
-                cur = []
-    if cur:
-        lines.append(" ".join(cur))
-    return lines
-
 PINCODE_RE = re.compile(r"(?<!\d)(\d{3})\s*(\d{3})(?!\d)")
 SPACE_BEFORE_PUNCT_RE = re.compile(r"\s+([,\.])")
 
 def format_indian_pincode(text: str, for_html: bool = False) -> str:
-    """Ensures 6-digit Indian pin codes are shown as '123 456' (space after 3 digits).
-       If for_html=True, uses non-breaking space so it doesn't wrap: '123&nbsp;456'
-    """
     if not text:
         return text
     sep = "&nbsp;" if for_html else " "
     return PINCODE_RE.sub(rf"\1{sep}\2", text)
 
 def normalize_text_for_display(text: str, for_html: bool = False) -> str:
-    """
-    - Removes spaces before comma/full stop so wrapping won't start a new line with ',' or '.'
-    - Applies Indian pincode spacing.
-    - If for_html=True, pincode uses non-breaking space to avoid messy wrap.
-    """
     if not text:
         return text
-    t = SPACE_BEFORE_PUNCT_RE.sub(r"\1", text)                  # "Chennai ," -> "Chennai,"
-    t = format_indian_pincode(t, for_html=for_html)             # "600125" -> "600&nbsp;125" (HTML) or "600 125" (PDF)
+    t = SPACE_BEFORE_PUNCT_RE.sub(r"\1", text)              # avoid "Society ,"
+    t = format_indian_pincode(t, for_html=for_html)         # 600125 -> 600 125 (PDF) / 600&nbsp;125 (HTML)
     return t
+
+def fy_label(y: int) -> str:
+    return f"{y}-{(y + 1) % 100:02d}"
+
 # -----------------------------------
-# PDF (reduced margins + signature bottom-right)
+# PDF
 # -----------------------------------
 def make_invoice_pdf(
     person: Person,
@@ -284,30 +264,22 @@ def make_invoice_pdf(
     total: float,
     amount_words: str,
 ) -> bytes:
-    from io import BytesIO
-    from reportlab.lib import colors
-    from reportlab.lib.pagesizes import A4
-    from reportlab.pdfgen import canvas
-
     buf = BytesIO()
     c = canvas.Canvas(buf, pagesize=A4)
     W, H = A4
 
-    # --- Theme (match preview) ---
     accent = colors.HexColor("#6FA8DC")
     accent2 = colors.HexColor("#9FC5E8")
     accent3 = colors.HexColor("#2F5E8E")
-    border = colors.HexColor("#BFC5CE") 
+    border = colors.HexColor("#BFC5CE")
     soft_line = colors.HexColor("#C9D1DB")
     light_bg = colors.HexColor("#EEF5FF")
     text = colors.HexColor("#222222")
 
-    # --- Page frame / usable area ---
     margin = 24
     left, right = margin, W - margin
     top, bottom = H - margin, margin
 
-    # helpers
     def set_font(bold=False, size=10):
         c.setFont("Helvetica-Bold" if bold else "Helvetica", size)
 
@@ -321,9 +293,11 @@ def make_invoice_pdf(
         set_font(bold, size)
         c.drawRightString(x, y, s)
 
+    # IMPORTANT: protect pincodes in wrapping so "600 125" doesn't split into 2 lines
     def wrap(text_in, font_name, font_size, max_w):
         c.setFont(font_name, font_size)
-        words = (text_in or "").split()
+        protected = PINCODE_RE.sub(r"\1~\2", (text_in or ""))  # 600 125 -> 600~125
+        words = protected.split()
         lines, cur = [], []
         for w in words:
             trial = (" ".join(cur + [w])).strip()
@@ -338,37 +312,30 @@ def make_invoice_pdf(
                     cur = []
         if cur:
             lines.append(" ".join(cur))
-        return lines
+        return [ln.replace("~", " ") for ln in lines]
 
-    # --- Outer frame ---
+    # Frame
     c.setStrokeColor(border)
     c.setLineWidth(1.2)
     c.rect(left, bottom, right - left, top - bottom, stroke=1, fill=0)
 
-    # Top / bottom bars (like preview)
     bar_h = 14
     c.setFillColor(accent)
     c.rect(left, top - bar_h, right - left, bar_h, stroke=0, fill=1)
     c.setFillColor(accent)
     c.rect(left, bottom, right - left, bar_h, stroke=0, fill=1)
 
-    # --- Header layout: LEFT provider block + RIGHT title/meta block ---
-
-    header_top = top - bar_h - 22  # was too tight
+    header_top = top - bar_h - 22
     header_left_x = left + 18
     header_right_w = 300
     header_right_x = right - 18 - header_right_w
 
-    # Center title (so it never feels cramped)
     title_y = header_top
     draw_txt((left + right) / 2 - 55, title_y, "TAX INVOICE", size=20, bold=True, col=colors.HexColor("#42526b"))
-
-    # Keep note top-right with a bit more padding
     draw_rtxt(right - 18, title_y + 2, "Original for Recipient", size=10, bold=False, col=colors.HexColor("#666666"))
 
-    # Meta box slightly lower (more breathing space under title)
     meta_h = 56
-    meta_y = header_top - 78   # push down a bit more than before
+    meta_y = header_top - 78
     c.setStrokeColor(border)
     c.setFillColor(colors.white)
     c.roundRect(header_right_x, meta_y, header_right_w, meta_h, 10, stroke=1, fill=1)
@@ -376,56 +343,40 @@ def make_invoice_pdf(
     draw_txt(header_right_x + 14, meta_y + 34, f"Invoice No.   {invoice_no}", size=10, bold=True)
     draw_txt(header_right_x + 14, meta_y + 16, f"Date: {invoice_date.strftime('%d/%m/%Y')}", size=10, bold=True)
 
-    # Left provider name/address
-    # --- Provider name/address (header left block) ---
-    addr_y = header_top - 45  # starting point below title
-
+    addr_y = header_top - 45
     draw_txt(header_left_x, addr_y, f"Name: {person.name}", size=12, bold=True)
+    addr_y -= 20
 
-    addr_y -= 20  # spacing after name
-
-    provider_addr = normalize_text_for_display(person.address)
+    provider_addr = normalize_text_for_display(person.address, for_html=False)
     for ln in wrap(provider_addr, "Helvetica", 10, (header_right_x - 24) - header_left_x):
         draw_txt(header_left_x, addr_y, ln, size=10)
-        addr_y -= 16  # increased line height
-
-    # extra breathing space after address block
+        addr_y -= 16
     addr_y -= 8
-    
-    # START main vertical cursor
-    y = addr_y
 
-    # Divider under header
+    y = addr_y
     y -= 10
     c.setStrokeColor(soft_line)
     c.setLineWidth(1.1)
     c.line(left + 14, y, right - 14, y)
 
-    # --- Body starts ---
     y -= 22
-
-    # Recipient section (LEFT) - no duplicate meta box here
     draw_txt(left + 18, y, RECIPIENT["name"], size=10, bold=True)
-    y -= 16   # more gap after bold name
+    y -= 16
 
     for line in RECIPIENT["address_lines"]:
-        draw_txt(left + 18, y, normalize_text_for_display(line), size=10)
-        y -= 15   # was 12 → more vertical air
+        draw_txt(left + 18, y, normalize_text_for_display(line, for_html=False), size=10)
+        y -= 15
 
-    y -= 8   # space before GSTIN line
-
+    y -= 8
     draw_txt(left + 18, y, "GSTIN of recipient :", size=10, bold=False)
-    draw_txt(left + 170, y, RECIPIENT['gstin'], size=10, bold=True)
+    draw_txt(left + 170, y, RECIPIENT["gstin"], size=10, bold=True)
 
-    y -= 18  # more space before next divider
-
-    # Divider
+    y -= 18
     c.setStrokeColor(soft_line)
     c.setLineWidth(1.1)
     c.line(left + 14, y, right - 14, y)
     y -= 18
 
-    # Provider detail KV grid (3 columns: label : value)
     label_x = left + 18
     colon_x = left + 310
     value_x = left + 325
@@ -435,48 +386,41 @@ def make_invoice_pdf(
         nonlocal y
         draw_txt(label_x, y, label, size=10, bold=False)
         draw_txt(colon_x, y, ":", size=10, bold=False, col=colors.HexColor("#666666"))
-
         lines = wrap(value, "Helvetica", 10, max_val_w)
         for ln in lines:
             draw_txt(value_x, y, ln, size=10, bold=False)
-            y -= 14  # slightly more row height
-
-        y -= extra_after  # bigger spacing after each field
+            y -= 14
+        y -= extra_after
 
     # PAN (bold value)
     draw_txt(label_x, y, "Pan Number of Service Provider", size=10, bold=False)
     draw_txt(colon_x, y, ":", size=10, bold=False, col=colors.HexColor("#666666"))
     draw_txt(value_x, y, person.pan, size=10, bold=True)
     y -= 18
-    
+
     # GST Registration (bold value)
     draw_txt(label_x, y, "GST Registration Number of service provider", size=10, bold=False)
     draw_txt(colon_x, y, ":", size=10, bold=False, col=colors.HexColor("#666666"))
     draw_txt(value_x, y, person.gst, size=10, bold=True)
     y -= 18
+
     kv("Service Accounting Code (SAC)", person.sac, extra_after=8)
-
-    # Add bigger gap after this long description to consume empty space nicely
     kv("Description of Service Accounting Code (SAC)", person.desc, extra_after=16)
-
     kv("Location of service provided", person.location, extra_after=10)
     kv("State code of service location", person.state_code, extra_after=10)
     kv("State name of service location", person.state_name, extra_after=12)
 
     y -= 8
 
-    # --- Amount table (match preview proportions) ---
     table_x = left + 18
     table_w = right - 18 - table_x
     header_h = 30
     row_h = 30
     table_h = header_h + 4 * row_h
 
-    # Table container
     c.setStrokeColor(border)
     c.roundRect(table_x, y - table_h, table_w, table_h, 10, stroke=1, fill=0)
 
-    # Header fill
     c.setFillColor(accent)
     c.roundRect(table_x, y - header_h, table_w, header_h, 10, stroke=0, fill=1)
     c.setFillColor(colors.white)
@@ -484,7 +428,6 @@ def make_invoice_pdf(
     c.drawString(table_x + 12, y - 20, "Particulars")
     c.drawRightString(table_x + table_w - 12, y - 20, "Amt Rs")
 
-    # Rows
     c.setFillColor(text)
     set_font(False, 10)
 
@@ -492,17 +435,14 @@ def make_invoice_pdf(
     c.drawString(table_x + 12, y - header_h - 20, rent_desc)
     c.drawRightString(table_x + table_w - 12, y - header_h - 20, format_money(rent))
 
-    # SGST row
     sgst_y = y - header_h - row_h
     c.drawRightString(table_x + table_w - 80, sgst_y - 20, "SGST @ 9%")
     c.drawRightString(table_x + table_w - 12, sgst_y - 20, format_money(sgst))
 
-    # CGST row
     cgst_y = y - header_h - 2 * row_h
     c.drawRightString(table_x + table_w - 80, cgst_y - 20, "CGST @ 9%")
     c.drawRightString(table_x + table_w - 12, cgst_y - 20, format_money(cgst))
 
-    # Total row (light bg)
     total_y = y - header_h - 3 * row_h
     c.setFillColor(light_bg)
     c.rect(table_x, total_y - row_h, table_w, row_h, stroke=0, fill=1)
@@ -513,42 +453,19 @@ def make_invoice_pdf(
 
     y = y - table_h - 18
 
-    # ---------------- Amount in words + Signature (no overlap) ----------------
-    sig_width = 260
-    gap = 20
-
-    left_col_x = table_x
-    left_col_w = table_w - sig_width - gap   # reserve space on the right for signature
-    right_col_x = table_x + left_col_w + gap
-
-    # Amount in words (full width is fine since signature is bottom)
     set_font(False, 10)
     for ln in wrap(f"Amount in words: {amount_words}", "Helvetica", 10, table_w):
         draw_txt(table_x, y, ln, size=10, bold=False)
         y -= 13
 
-    # --- Signature anchored bottom-right (do NOT move up) ---
     sig_width = 260
     sig_x = right - 18 - sig_width
-    sig_y = bottom + bar_h + 26  # fixed anchor above bottom blue bar
+    sig_y = bottom + bar_h + 26
 
-    # --- Signature anchored bottom-right (balanced spacing) ---
-    sig_width = 260
-    sig_x = right - 18 - sig_width
-    sig_y = bottom + bar_h + 26  # fixed anchor above bottom blue bar
-
-    # Signature label
     draw_txt(sig_x, sig_y + 60, "Signature:", size=10, bold=True)
-
-    # Medium signing space (reduced from previous)
-    # Optional light signing line
     c.setStrokeColor(colors.HexColor("#cccccc"))
     c.line(sig_x, sig_y + 44, sig_x + 200, sig_y + 44)
-
-    # Name
     draw_txt(sig_x, sig_y + 22, "Name :", size=10, bold=True)
-
-    # Move designation further right
     draw_txt(sig_x + 90, sig_y + 4, "Authorised Signatory", size=9, bold=True)
 
     c.showPage()
@@ -556,46 +473,74 @@ def make_invoice_pdf(
     buf.seek(0)
     return buf.getvalue()
 
-
 # -----------------------------------
-# UI
+# UI (Single Layout + FY/Month Picker)
 # -----------------------------------
 st.title("🏠 Sulur Trends Rent Invoice Generator")
 
-st.sidebar.header("View Settings")
-desktop_layout = st.sidebar.toggle("Desktop Layout (2 columns)", value=False)
+# Sidebar FY + Month
+st.sidebar.header("Period Quick Select")
 
-if desktop_layout:
-    col1, col2, col3 = st.columns([2, 1, 1])
-    with col1:
-        selected_name = st.selectbox("Select Name", list(PEOPLE.keys()))
-    with col2:
-        from_date = st.date_input(
-            "From Date",
-            value=datetime.date.today().replace(day=1),
-            format="DD/MM/YYYY"
-        )
-    with col3:
-        to_date = st.date_input(
-            "To Date",
-            value=datetime.date.today(),
-            format="DD/MM/YYYY"
-        )
-else:
+today = datetime.date.today()
+fy_start_current = today.year if today.month >= 4 else today.year - 1
+fy_starts = list(range(fy_start_current - 1, fy_start_current + 11))  # last FY to next 10 FYs
+
+selected_fy_start = st.sidebar.selectbox(
+    "Financial Year (FY)",
+    options=fy_starts,
+    index=1,
+    format_func=fy_label
+)
+
+fy_months = [
+    ("April", 4), ("May", 5), ("June", 6), ("July", 7), ("August", 8), ("September", 9),
+    ("October", 10), ("November", 11), ("December", 12),
+    ("January", 1), ("February", 2), ("March", 3),
+]
+month_names = [m[0] for m in fy_months]
+month_map = dict(fy_months)
+
+selected_month_name = st.sidebar.selectbox("Month (FY)", month_names, index=0)
+selected_month_num = month_map[selected_month_name]
+month_year = selected_fy_start if selected_month_num >= 4 else (selected_fy_start + 1)
+
+# Default dates (first load): 01 May 2026 to end of May 2026
+DEFAULT_FROM_DATE = datetime.date(2026, 5, 1)
+DEFAULT_TO_DATE = datetime.date(2026, 5, calendar.monthrange(2026, 5)[1])
+
+if "from_date" not in st.session_state:
+    st.session_state["from_date"] = DEFAULT_FROM_DATE
+if "to_date" not in st.session_state:
+    st.session_state["to_date"] = DEFAULT_TO_DATE
+
+if st.sidebar.button("Apply Month Dates"):
+    st.session_state["from_date"] = datetime.date(month_year, selected_month_num, 1)
+    last_day = calendar.monthrange(month_year, selected_month_num)[1]
+    st.session_state["to_date"] = datetime.date(month_year, selected_month_num, last_day)
+    st.rerun()
+
+# Main inputs (single responsive layout; columns stack on mobile)
+c1, c2, c3 = st.columns([2, 1, 1])
+with c1:
     selected_name = st.selectbox("Select Name", list(PEOPLE.keys()))
-    col1, col2 = st.columns(2)
-    with col1:
-        from_date = st.date_input(
-            "From Date",
-            value=datetime.date.today().replace(day=1),
-            format="DD/MM/YYYY"
-        )
-    with col2:
-        to_date = st.date_input(
-            "To Date",
-            value=datetime.date.today(),
-            format="DD/MM/YYYY"
-        )
+with c2:
+    from_date = st.date_input(
+        "From Date",
+        key="from_date",
+        value=st.session_state["from_date"],
+        format="DD/MM/YYYY"
+    )
+with c3:
+    to_date = st.date_input(
+        "To Date",
+        key="to_date",
+        value=st.session_state["to_date"],
+        format="DD/MM/YYYY"
+    )
+
+# Sync back in case user edits manually
+st.session_state["from_date"] = from_date
+st.session_state["to_date"] = to_date
 
 if to_date < from_date:
     st.warning("To Date is earlier than From Date. Please correct it.")
@@ -604,8 +549,8 @@ person = PEOPLE[selected_name]
 
 # Invoice date = 1st of month of From Date
 invoice_date = from_date.replace(day=1)
-seq, fy_label = invoice_seq_and_fy(invoice_date)
-default_invoice_no = f"{seq:02d} / {fy_label}"
+seq, fy_lbl = invoice_seq_and_fy(invoice_date)
+default_invoice_no = f"{seq:02d} / {fy_lbl}"
 
 st.subheader("Invoice Inputs")
 rent = st.number_input("Rent Amount (Rs)", min_value=0.0, value=float(person.default_rent), step=100.0, format="%.2f")
@@ -616,7 +561,7 @@ cgst = round(rent * 0.09, 2)
 total = round(rent + sgst + cgst, 2)
 amount_words = f"{number_to_words_indian(int(round(total)))} Only"
 
-# KPI Cards (colored)
+# KPI Cards
 st.markdown(
     f"""
     <div class="kpi-grid">
@@ -631,7 +576,6 @@ st.markdown(
 
 st.subheader("Preview (should match PDF)")
 
-# IMPORTANT FIX: embed CSS INSIDE the iframe so preview isn’t plain
 preview_css = """
 <style>
   :root{ --accent:#6FA8DC; --accent2:#9FC5E8; --accent3:#2F5E8E; }
@@ -670,17 +614,15 @@ preview_css = """
   .sigbox b{ color:#2a3b57; }
 </style>
 """
-person_address_preview = normalize_text_for_display(person.address)
+
 recipient_lines_preview = "<br>".join(normalize_text_for_display(x, for_html=True) for x in RECIPIENT["address_lines"])
 address_preview = normalize_text_for_display(person.address, for_html=True)
 
 if person.name == "S.N.Geetha":
-    # Keep this phrase unbreakable
     address_preview = address_preview.replace(
         "River View Housing Society",
         "River&nbsp;View&nbsp;Housing&nbsp;Society"
     )
-    # Force a clean break so "Chennai - 600 125" starts on next line
     address_preview = address_preview.replace(", Chennai", ",<br>Chennai")
 
 preview_html = f"""
@@ -713,7 +655,7 @@ preview_html = f"""
       <div class="lines"><b>{RECIPIENT["name"]}</b><br>
         {recipient_lines_preview}
       </div>
-      <div class="lines" style="margin-top:10px;">   <b>GSTIN of recipient :</b> <b>{RECIPIENT["gstin"]}</b> </div>
+      <div class="lines" style="margin-top:10px;"><b>GSTIN of recipient :</b> <b>{RECIPIENT["gstin"]}</b></div>
     </div>
 
     <div class="hr"></div>
@@ -791,24 +733,4 @@ st.download_button(
     file_name=file_name,
     mime="application/pdf",
     use_container_width=True
-
 )
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
