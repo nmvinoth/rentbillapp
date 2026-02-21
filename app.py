@@ -414,8 +414,17 @@ def make_invoice_pdf(
 
         y -= extra_after  # bigger spacing after each field
 
-    kv("Pan Number of Service Provider", person.pan, extra_after=8)
-    kv("GST Registration Number of service provider", person.gst, extra_after=8)
+    # PAN (bold value)
+    draw_txt(label_x, y, "Pan Number of Service Provider", size=10, bold=False)
+    draw_txt(colon_x, y, ":", size=10, bold=False, col=colors.HexColor("#666666"))
+    draw_txt(value_x, y, person.pan, size=10, bold=True)
+    y -= 18
+    
+    # GST Registration (bold value)
+    draw_txt(label_x, y, "GST Registration Number of service provider", size=10, bold=False)
+    draw_txt(colon_x, y, ":", size=10, bold=False, col=colors.HexColor("#666666"))
+    draw_txt(value_x, y, person.gst, size=10, bold=True)
+    y -= 18
     kv("Service Accounting Code (SAC)", person.sac, extra_after=8)
 
     # Add bigger gap after this long description to consume empty space nicely
@@ -647,15 +656,15 @@ preview_html = f"""
       <div class="lines"><b>{RECIPIENT["name"]}</b><br>
         {"<br>".join(RECIPIENT["address_lines"])}
       </div>
-      <div class="lines" style="margin-top:10px;"><b>GSTIN of recipient :</b> {RECIPIENT["gstin"]}</div>
+      <div class="lines" style="margin-top:10px;">   <b>GSTIN of recipient :</b> <b>{RECIPIENT["gstin"]}</b> </div>
     </div>
 
     <div class="hr"></div>
 
     <div class="section">
       <div class="kv-grid">
-        <div><b>Pan Number of Service Provider</b></div><div class="c">:</div><div>{person.pan}</div>
-        <div><b>GST Registration Number of service provider</b></div><div class="c">:</div><div>{person.gst}</div>
+        <div><b>Pan Number of Service Provider</b></div><div class="c">:</div><div><b>{person.pan}</b></div>
+        <div><b>GST Registration Number of service provider</b></div><div class="c">:</div><div><b>{person.gst}</b></div>
         <div><b>Service Accounting Code (SAC)</b></div><div class="c">:</div><div>{person.sac}</div>
         <div><b>Description of Service Accounting Code (SAC)</b></div><div class="c">:</div><div>{person.desc}</div>
         <div><b>Location of service provided</b></div><div class="c">:</div><div>{person.location}</div>
@@ -727,6 +736,7 @@ st.download_button(
     use_container_width=True
 
 )
+
 
 
 
