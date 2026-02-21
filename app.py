@@ -542,16 +542,32 @@ if desktop_layout:
     with col1:
         selected_name = st.selectbox("Select Name", list(PEOPLE.keys()))
     with col2:
-        from_date = st.date_input("From Date", value=datetime.date.today().replace(day=1))
+        from_date = st.date_input(
+            "From Date",
+            value=datetime.date.today().replace(day=1),
+            format="DD/MM/YYYY"
+        )
     with col3:
-        to_date = st.date_input("To Date", value=datetime.date.today())
+        to_date = st.date_input(
+            "To Date",
+            value=datetime.date.today(),
+            format="DD/MM/YYYY"
+        )
 else:
     selected_name = st.selectbox("Select Name", list(PEOPLE.keys()))
     col1, col2 = st.columns(2)
     with col1:
-        from_date = st.date_input("From Date", value=datetime.date.today().replace(day=1))
+        from_date = st.date_input(
+            "From Date",
+            value=datetime.date.today().replace(day=1),
+            format="DD/MM/YYYY"
+        )
     with col2:
-        to_date = st.date_input("To Date", value=datetime.date.today())
+        to_date = st.date_input(
+            "To Date",
+            value=datetime.date.today(),
+            format="DD/MM/YYYY"
+        )
 
 if to_date < from_date:
     st.warning("To Date is earlier than From Date. Please correct it.")
@@ -737,6 +753,7 @@ st.download_button(
     use_container_width=True
 
 )
+
 
 
 
