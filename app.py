@@ -526,9 +526,9 @@ if st.sidebar.button("Apply Month Dates"):
 c1, c2, c3 = st.columns([2, 1, 1])
 with c1:
     selected_name = st.selectbox(
-    "Select Name",
-    list(PEOPLE.keys()),
-    key="selected_name"
+        "Select Name",
+        list(PEOPLE.keys()),
+        key="selected_name"
     )
 with c2:
     from_date = st.date_input(
@@ -711,7 +711,12 @@ preview_html = f"""
 </html>
 """
 
-components.html(preview_html, height=920, scrolling=True)
+components.html(
+    preview_html,
+    height=920,
+    scrolling=True,
+    key=f"preview_{selected_name}_{from_date}_{to_date}_{invoice_no}"
+)
 
 # PDF
 pdf_bytes = make_invoice_pdf(
@@ -735,5 +740,6 @@ st.download_button(
     mime="application/pdf",
     use_container_width=True
 )
+
 
 
