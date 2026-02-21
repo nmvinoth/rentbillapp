@@ -433,13 +433,13 @@ def make_invoice_pdf(
         y -= extra_after
 
     # PAN (bold value)
-    draw_txt(label_x, y, "Pan Number of Service Provider", size=10, bold=False)
+    draw_txt(label_x, y, "PAN Number of Service Provider", size=10, bold=False)
     draw_txt(colon_x, y, ":", size=10, bold=False, col=colors.HexColor("#666666"))
     draw_txt(value_x, y, person.pan, size=10, bold=True)
     y -= 18
 
     # GST Registration (bold value)
-    draw_txt(label_x, y, "GST Registration Number of service provider", size=10, bold=False)
+    draw_txt(label_x, y, "GST Registration Number of Service Provider", size=10, bold=False)
     draw_txt(colon_x, y, ":", size=10, bold=False, col=colors.HexColor("#666666"))
     draw_txt(value_x, y, person.gst, size=10, bold=True)
     y -= 18
@@ -447,7 +447,7 @@ def make_invoice_pdf(
     kv("Service Accounting Code (SAC)", person.sac, extra_after=8)
     kv("Description of Service Accounting Code (SAC)", person.desc, extra_after=16)
     # Location (force single line)
-    draw_txt(label_x, y, "Location of service provided", size=10, bold=False)
+    draw_txt(label_x, y, "Location of Service Provided", size=10, bold=False)
     draw_txt(colon_x, y, ":", size=10, bold=False, col=colors.HexColor("#666666"))
     
     draw_txt(value_x, y, person.location, size=10, bold=False)
@@ -714,11 +714,11 @@ preview_html = f"""
 
     <div class="section">
       <div class="kv-grid">
-        <div><b>Pan Number of Service Provider</b></div><div class="c">:</div><div><b>{person.pan}</b></div>
-        <div><b>GST Registration Number of service provider</b></div><div class="c">:</div><div><b>{person.gst}</b></div>
+        <div><b>PAN Number of Service Provider</b></div><div class="c">:</div><div><b>{person.pan}</b></div>
+        <div><b>GST Registration Number of Service Provider</b></div><div class="c">:</div><div><b>{person.gst}</b></div>
         <div><b>Service Accounting Code (SAC)</b></div><div class="c">:</div><div>{person.sac}</div>
         <div><b>Description of Service Accounting Code (SAC)</b></div><div class="c">:</div><div>{person.desc}</div>
-        <div><b>Location of service provided</b></div><div class="c">:</div><div>{person.location}</div>
+        <div><b>Location of Service Provided</b></div><div class="c">:</div><div>{person.location}</div>
         <div><b>State code of service location</b></div><div class="c">:</div><div>{person.state_code}</div>
         <div><b>State name of service location</b></div><div class="c">:</div><div>{person.state_name}</div>
       </div>
@@ -790,6 +790,7 @@ st.download_button(
     mime="application/pdf",
     use_container_width=True
 )
+
 
 
 
