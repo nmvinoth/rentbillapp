@@ -34,7 +34,7 @@ if not st.session_state.auth_ok:
 # -----------------------------------
 # PAGE CONFIG
 # -----------------------------------
-st.set_page_config(page_title="Sulur Reliance Trends Rent Tax Invoice", layout="centered")
+st.set_page_config(page_title=" Reliance Trends Rent Tax Invoice", layout="centered")
 
 # -----------------------------------
 # APP UI CSS (Streamlit page + KPI cards)
@@ -524,6 +524,7 @@ def make_invoice_pdf(
 st.markdown(
     """
     <h1 style="
+        text-align: center;
         white-space: nowrap;
         font-size: 28px;
         font-weight: 800;
@@ -802,6 +803,7 @@ st.download_button(
     mime="application/pdf",
     use_container_width=True
 )
+
 
 
 
