@@ -539,14 +539,16 @@ st.markdown(
 # Sidebar FY + Month
 st.sidebar.header("Period Quick Select")
 
-today = datetime.date.today()
-fy_start_current = today.year if today.month >= 4 else today.year - 1
-fy_starts = list(range(fy_start_current - 1, fy_start_current + 11))  # last FY to next 10 FYs
+# Always start FY from 2026-27
+FY_START_BASE = 2026
+
+# Show 10 financial years starting from 2026
+fy_starts = list(range(FY_START_BASE, FY_START_BASE + 10))
 
 selected_fy_start = st.sidebar.selectbox(
     "Financial Year (FY)",
     options=fy_starts,
-    index=1,
+    index=0,
     format_func=fy_label
 )
 
@@ -803,6 +805,7 @@ st.download_button(
     mime="application/pdf",
     use_container_width=True
 )
+
 
 
 
