@@ -135,7 +135,7 @@ RECIPIENT = {
     "address_lines": [
         "89, A1 Tower, Dr Radhakrishnan Salai",
         "Mylapore, Chennai - 600004.",
-        "TamilNadu",
+        "Tamil Nadu",
     ],
     "gstin": "33AAJCR6636B1ZJ",
 }
@@ -150,7 +150,7 @@ PEOPLE = {
         desc="Rental or leasing services involving own or leased non-residential property",
         location="SULUR, COIMBATORE DIST., TAMIL NADU",
         state_code="33",
-        state_name="TamilNadu",
+        state_name="Tamil Nadu",
         default_rent=223667.53,
     ),
     "S.N.Geetha": Person(
@@ -162,7 +162,7 @@ PEOPLE = {
         desc="Rental or leasing services involving own or leased non-residential property",
         location="SULUR, COIMBATORE DIST., TAMIL NADU",
         state_code="33",
-        state_name="TamilNadu",
+        state_name="Tamil Nadu",
         default_rent=223667.53,
     ),
     "N.RAJENDRAN": Person(
@@ -174,7 +174,7 @@ PEOPLE = {
         desc="Rental or leasing services involving own or leased non-residential property",
         location="SULUR, COIMBATORE DIST., TAMIL NADU",
         state_code="33",
-        state_name="TamilNadu",
+        state_name="Tamil Nadu",
         default_rent=149112.45,
     ),
 }
@@ -232,6 +232,7 @@ def invoice_seq_and_fy(dt: datetime.date):
 
 PINCODE_RE = re.compile(r"(?<!\d)(\d{3})\s*(\d{3})(?!\d)")
 SPACE_BEFORE_PUNCT_RE = re.compile(r"\s+([,\.])")
+DOT_TOKEN_RE = re.compile(r"(?<!\s)(\d+)\.\s*([A-Za-z])")
 
 def format_indian_pincode(text: str, for_html: bool = False) -> str:
     if not text:
@@ -296,10 +297,23 @@ def make_invoice_pdf(
     # IMPORTANT: protect pincodes in wrapping so "600 125" doesn't split into 2 lines
     def wrap(text_in, font_name, font_size, max_w):
         c.setFont(font_name, font_size)
-        protected = PINCODE_RE.sub(r"\1~\2", (text_in or ""))  # 600 125 -> 600~125
-        # Also protect the " - 600~018" tail so it stays with the city:
-        # "CHENNAI - 600~018" -> "CHENNAI~-~600~018" (single token)
+    
+        protected = (text_in or "")
+    
+        # 1) Protect pincodes so 600 018 doesn't split: 600018 / 600 018 -> 600~018
+        protected = PINCODE_RE.sub(r"\1~\2", protected)
+    
+        # 2) Keep " - 600~018" together with the preceding city token:
+        # "CHENNAI - 600~018" -> "CHENNAI~-~600~018"
         protected = re.sub(r"\s*-\s*(\d{3})~(\d{3})", r"~-~\1~\2", protected)
+    
+        # 3) Prevent splits like "181. TTK" or "181.TTK" across lines
+        # Normalize any "181. T" -> "181.T"
+        protected = re.sub(r"(\d+)\.\s*([A-Za-z])", r"\1.\2", protected)
+        # Protect "181.T" so wrapper doesn't break after "181."
+        protected = re.sub(r"(\d+)\.([A-Za-z])", r"\1~.\2", protected)
+    
+        # Wrap
         words = protected.split()
         lines, cur = [], []
         for w in words:
@@ -315,7 +329,9 @@ def make_invoice_pdf(
                     cur = []
         if cur:
             lines.append(" ".join(cur))
-        return [ln.replace("~-~", " - ").replace("~", " ") for ln in lines]
+    
+        # Restore protected markers
+        return [ln.replace("~-~", " - ").replace("~.", ".").replace("~", " ") for ln in lines]
 
     # Frame
     c.setStrokeColor(border)
@@ -746,6 +762,7 @@ st.download_button(
     mime="application/pdf",
     use_container_width=True
 )
+
 
 
 
