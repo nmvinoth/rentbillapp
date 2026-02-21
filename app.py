@@ -297,6 +297,9 @@ def make_invoice_pdf(
     def wrap(text_in, font_name, font_size, max_w):
         c.setFont(font_name, font_size)
         protected = PINCODE_RE.sub(r"\1~\2", (text_in or ""))  # 600 125 -> 600~125
+        # Also protect the " - 600~018" tail so it stays with the city:
+        # "CHENNAI - 600~018" -> "CHENNAI~-~600~018" (single token)
+        protected = re.sub(r"\s*-\s*(\d{3})~(\d{3})", r"~-~\1~\2", protected)
         words = protected.split()
         lines, cur = [], []
         for w in words:
@@ -312,7 +315,7 @@ def make_invoice_pdf(
                     cur = []
         if cur:
             lines.append(" ".join(cur))
-        return [ln.replace("~", " ") for ln in lines]
+        return [ln.replace("~-~", " - ").replace("~", " ") for ln in lines]
 
     # Frame
     c.setStrokeColor(border)
@@ -743,6 +746,7 @@ st.download_button(
     mime="application/pdf",
     use_container_width=True
 )
+
 
 
 
