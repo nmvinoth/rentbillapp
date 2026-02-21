@@ -527,20 +527,14 @@ with c2:
     from_date = st.date_input(
         "From Date",
         key="from_date",
-        value=st.session_state["from_date"],
         format="DD/MM/YYYY"
     )
 with c3:
     to_date = st.date_input(
         "To Date",
         key="to_date",
-        value=st.session_state["to_date"],
         format="DD/MM/YYYY"
     )
-
-# Sync back in case user edits manually
-st.session_state["from_date"] = from_date
-st.session_state["to_date"] = to_date
 
 if to_date < from_date:
     st.warning("To Date is earlier than From Date. Please correct it.")
@@ -734,3 +728,4 @@ st.download_button(
     mime="application/pdf",
     use_container_width=True
 )
+
