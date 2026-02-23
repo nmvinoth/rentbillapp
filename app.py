@@ -301,17 +301,18 @@ def make_invoice_pdf(
     cgst: float,
     total: float,
     amount_words: str,
+    theme: dict
 ) -> bytes:
     buf = BytesIO()
     c = canvas.Canvas(buf, pagesize=A4)
     W, H = A4
 
-    accent = colors.HexColor("#6FA8DC")
-    accent2 = colors.HexColor("#9FC5E8")
-    accent3 = colors.HexColor("#2F5E8E")
+    accent = colors.HexColor(theme["primary"])
+    accent2 = colors.HexColor(theme["secondary"])
+    accent3 = colors.HexColor(theme["accent_dark"])
     border = colors.HexColor("#BFC5CE")
     soft_line = colors.HexColor("#C9D1DB")
-    light_bg = colors.HexColor("#EEF5FF")
+    light_bg = colors.HexColor(theme["light_bg"])
     text = colors.HexColor("#222222")
 
     margin = 24
@@ -637,6 +638,17 @@ if to_date < from_date:
 person = PEOPLE[selected_name]
 theme = THEMES.get(selected_name, THEMES["S.N.PREMA"])
 
+st.markdown(
+    f"""
+    <style>
+    .stApp {{
+      background: {theme["ui_bg"]};
+    }}
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
 # Invoice date = 1st of month of From Date
 invoice_date = from_date.replace(day=1)
 seq, fy_lbl = invoice_seq_and_fy(invoice_date)
@@ -668,7 +680,11 @@ st.subheader("Preview (should match PDF)")
 
 preview_css = """
 <style>
-  :root{ --accent:#6FA8DC; --accent2:#9FC5E8; --accent3:#2F5E8E; }
+  :root{{
+    --accent:{theme["primary"]};
+    --accent2:{theme["secondary"]};
+    --accent3:{theme["accent_dark"]};
+  }}
   body{ margin:0; padding:0; background:#fff; font-family: Arial, sans-serif; }
   .preview-frame{ border:2px solid rgba(47,94,142,0.20); border-radius:16px; overflow:hidden; background:white; }
   .inv-bar{ height:14px; background: linear-gradient(90deg, var(--accent), var(--accent2)); }
@@ -820,6 +836,7 @@ pdf_bytes = make_invoice_pdf(
     cgst=cgst,
     total=total,
     amount_words=amount_words,
+    theme=theme
 )
 
 file_name = f"TaxInvoice_{person.name.replace(' ', '_')}_{invoice_date.strftime('%Y%m')}.pdf"
@@ -830,6 +847,7 @@ st.download_button(
     mime="application/pdf",
     use_container_width=True
 )
+
 
 
 
