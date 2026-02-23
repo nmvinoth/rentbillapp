@@ -685,7 +685,7 @@ preview_css = f"""
     --accent2:{theme["secondary"]};
     --accent3:{theme["accent_dark"]};
   }}
-  body{ margin:0; padding:0; background:#fff; font-family: Arial, sans-serif; }
+  body{{ margin:0; padding:0; background:#fff; font-family: Arial, sans-serif; }}
   .preview-frame{ border:2px solid rgba(47,94,142,0.20); border-radius:16px; overflow:hidden; background:white; }
   .inv-bar{ height:14px; background: linear-gradient(90deg, var(--accent), var(--accent2)); }
   .inv-top{ padding:14px 18px; display:flex; justify-content:space-between; gap:18px; }
@@ -847,6 +847,7 @@ st.download_button(
     mime="application/pdf",
     use_container_width=True
 )
+
 
 
 
