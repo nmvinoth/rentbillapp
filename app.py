@@ -678,7 +678,7 @@ st.markdown(
 
 st.subheader("Preview (should match PDF)")
 
-preview_css = """
+preview_css = f"""
 <style>
   :root{{
     --accent:{theme["primary"]};
@@ -847,6 +847,7 @@ st.download_button(
     mime="application/pdf",
     use_container_width=True
 )
+
 
 
 
