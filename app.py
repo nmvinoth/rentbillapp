@@ -577,30 +577,40 @@ month_names = [m[0] for m in fy_months]
 month_map = dict(fy_months)
 month_num_to_name = {v: k for k, v in month_map.items()}
 
-# Default dates (first load): April 2026
-DEFAULT_FROM_DATE = datetime.date(2026, 4, 1)
-DEFAULT_TO_DATE = datetime.date(2026, 4, calendar.monthrange(2026, 4)[1])
+# --------- Persist sidebar selection via URL query params ----------
+qp = st.query_params  # Streamlit new API
 
-if "from_date" not in st.session_state:
-    st.session_state["from_date"] = DEFAULT_FROM_DATE
-if "to_date" not in st.session_state:
-    st.session_state["to_date"] = DEFAULT_TO_DATE
+if "sidebar_fy_start" not in st.session_state:
+    st.session_state["sidebar_fy_start"] = int(qp.get("fy", FY_START_BASE))
+
+if "sidebar_month_name" not in st.session_state:
+    st.session_state["sidebar_month_name"] = qp.get("mo", "April")
+
+# --------- Default From/To if not set (first load) ----------
+if "from_date" not in st.session_state or "to_date" not in st.session_state:
+    mnum = month_map.get(st.session_state["sidebar_month_name"], 4)
+    myear = st.session_state["sidebar_fy_start"] if mnum >= 4 else (st.session_state["sidebar_fy_start"] + 1)
+    st.session_state["from_date"] = datetime.date(myear, mnum, 1)
+    last_day = calendar.monthrange(myear, mnum)[1]
+    st.session_state["to_date"] = datetime.date(myear, mnum, last_day)
+
 if "selected_name" not in st.session_state:
     st.session_state["selected_name"] = list(PEOPLE.keys())[0]
 
-# ---- Sync sidebar defaults from the current from_date (so left = right on load) ----
-fd = st.session_state["from_date"]
+# --------- Track whether dates were changed manually or by sidebar ----------
+if "date_source" not in st.session_state:
+    st.session_state["date_source"] = "sidebar"
 
-derived_fy_start = fd.year if fd.month >= 4 else fd.year - 1
-derived_fy_start = max(derived_fy_start, FY_START_BASE)
+# --------- If user manually changed From Date, sync sidebar to match ----------
+if st.session_state.get("date_source") == "manual":
+    fd = st.session_state["from_date"]
+    derived_fy_start = fd.year if fd.month >= 4 else fd.year - 1
+    derived_fy_start = max(derived_fy_start, FY_START_BASE)
 
-derived_month_name = month_num_to_name.get(fd.month, "April")
-
-if "sidebar_fy_start" not in st.session_state:
     st.session_state["sidebar_fy_start"] = derived_fy_start
-if "sidebar_month_name" not in st.session_state:
-    st.session_state["sidebar_month_name"] = derived_month_name
+    st.session_state["sidebar_month_name"] = month_num_to_name.get(fd.month, "April")
 
+# Sidebar widgets (persist via keys)
 selected_fy_start = st.sidebar.selectbox(
     "Financial Year (FY)",
     options=fy_starts,
@@ -614,14 +624,19 @@ selected_month_name = st.sidebar.selectbox(
     key="sidebar_month_name"
 )
 
+# Save sidebar selection to URL (so it survives refresh / reopen)
+st.query_params["fy"] = str(st.session_state["sidebar_fy_start"])
+st.query_params["mo"] = st.session_state["sidebar_month_name"]
+
 selected_month_num = month_map[selected_month_name]
 month_year = selected_fy_start if selected_month_num >= 4 else (selected_fy_start + 1)
 
 if st.sidebar.button("Apply Month Dates"):
-    # apply month date range
     st.session_state["from_date"] = datetime.date(month_year, selected_month_num, 1)
     last_day = calendar.monthrange(month_year, selected_month_num)[1]
     st.session_state["to_date"] = datetime.date(month_year, selected_month_num, last_day)
+
+    st.session_state["date_source"] = "sidebar"
 
 # Main inputs (single responsive layout; columns stack on mobile)
 c1, c2, c3 = st.columns([2, 1, 1])
@@ -869,6 +884,7 @@ st.download_button(
     mime="application/pdf",
     use_container_width=True
 )
+
 
 
 
