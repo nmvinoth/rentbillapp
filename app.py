@@ -639,6 +639,9 @@ if st.sidebar.button("Apply Month Dates"):
     st.session_state["date_source"] = "sidebar"
 
 # Main inputs (single responsive layout; columns stack on mobile)
+def _mark_manual_date_change():
+    st.session_state["date_source"] = "manual"
+
 c1, c2, c3 = st.columns([2, 1, 1])
 with c1:
     selected_name = st.selectbox(
@@ -650,13 +653,15 @@ with c2:
     from_date = st.date_input(
         "From Date",
         key="from_date",
-        format="DD/MM/YYYY"
+        format="DD/MM/YYYY",
+        on_change=_mark_manual_date_change
     )
 with c3:
     to_date = st.date_input(
         "To Date",
         key="to_date",
-        format="DD/MM/YYYY"
+        format="DD/MM/YYYY",
+        on_change=_mark_manual_date_change
     )
 
 if to_date < from_date:
@@ -884,6 +889,7 @@ st.download_button(
     mime="application/pdf",
     use_container_width=True
 )
+
 
 
 
