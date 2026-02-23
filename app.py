@@ -566,16 +566,7 @@ st.sidebar.header("Period Quick Select")
 
 # Always start FY from 2026-27
 FY_START_BASE = 2026
-
-# Show 10 financial years starting from 2026
 fy_starts = list(range(FY_START_BASE, FY_START_BASE + 10))
-
-selected_fy_start = st.sidebar.selectbox(
-    "Financial Year (FY)",
-    options=fy_starts,
-    index=0,
-    format_func=fy_label
-)
 
 fy_months = [
     ("April", 4), ("May", 5), ("June", 6), ("July", 7), ("August", 8), ("September", 9),
@@ -584,32 +575,53 @@ fy_months = [
 ]
 month_names = [m[0] for m in fy_months]
 month_map = dict(fy_months)
+month_num_to_name = {v: k for k, v in month_map.items()}
 
-selected_month_name = st.sidebar.selectbox("Month (FY)", month_names, index=0)
-selected_month_num = month_map[selected_month_name]
-month_year = selected_fy_start if selected_month_num >= 4 else (selected_fy_start + 1)
-
-# Default dates (first load): 01 May 2026 to end of May 2026
-DEFAULT_FROM_DATE = datetime.date(2026, 5, 1)
-DEFAULT_TO_DATE = datetime.date(2026, 5, calendar.monthrange(2026, 5)[1])
+# Default dates (first load): April 2026
+DEFAULT_FROM_DATE = datetime.date(2026, 4, 1)
+DEFAULT_TO_DATE = datetime.date(2026, 4, calendar.monthrange(2026, 4)[1])
 
 if "from_date" not in st.session_state:
     st.session_state["from_date"] = DEFAULT_FROM_DATE
 if "to_date" not in st.session_state:
     st.session_state["to_date"] = DEFAULT_TO_DATE
-    
 if "selected_name" not in st.session_state:
     st.session_state["selected_name"] = list(PEOPLE.keys())[0]
-    
-if st.sidebar.button("Apply Month Dates"):
-    # preserve current person selection
-    st.session_state["selected_name"] = st.session_state.get("selected_name", list(PEOPLE.keys())[0])
 
+# ---- Sync sidebar defaults from the current from_date (so left = right on load) ----
+fd = st.session_state["from_date"]
+
+derived_fy_start = fd.year if fd.month >= 4 else fd.year - 1
+derived_fy_start = max(derived_fy_start, FY_START_BASE)
+
+derived_month_name = month_num_to_name.get(fd.month, "April")
+
+if "sidebar_fy_start" not in st.session_state:
+    st.session_state["sidebar_fy_start"] = derived_fy_start
+if "sidebar_month_name" not in st.session_state:
+    st.session_state["sidebar_month_name"] = derived_month_name
+
+selected_fy_start = st.sidebar.selectbox(
+    "Financial Year (FY)",
+    options=fy_starts,
+    key="sidebar_fy_start",
+    format_func=fy_label
+)
+
+selected_month_name = st.sidebar.selectbox(
+    "Month (FY)",
+    month_names,
+    key="sidebar_month_name"
+)
+
+selected_month_num = month_map[selected_month_name]
+month_year = selected_fy_start if selected_month_num >= 4 else (selected_fy_start + 1)
+
+if st.sidebar.button("Apply Month Dates"):
     # apply month date range
     st.session_state["from_date"] = datetime.date(month_year, selected_month_num, 1)
     last_day = calendar.monthrange(month_year, selected_month_num)[1]
     st.session_state["to_date"] = datetime.date(month_year, selected_month_num, last_day)
-    # no st.rerun() needed — Streamlit reruns automatically after button click
 
 # Main inputs (single responsive layout; columns stack on mobile)
 c1, c2, c3 = st.columns([2, 1, 1])
@@ -857,6 +869,7 @@ st.download_button(
     mime="application/pdf",
     use_container_width=True
 )
+
 
 
 
