@@ -644,17 +644,13 @@ st.markdown(
       :root {{
         --accent: {theme["primary"]};
         --accent2: {theme["secondary"]};
-
-        --kpi1: {theme.get("kpi1", theme["light_bg"])};
-        --kpi2: {theme.get("kpi2", theme["light_bg"])};
-        --kpi3: {theme.get("kpi3", theme["light_bg"])};
-        --kpi4: {theme.get("kpi4", theme["light_bg"])};
       }}
 
       .stApp {{
         background: {theme["ui_bg"]};
       }}
 
+      /* Make Download button match theme */
       div[data-testid="stDownloadButton"] > button {{
         background: linear-gradient(90deg, var(--accent), var(--accent2)) !important;
       }}
@@ -861,6 +857,7 @@ st.download_button(
     mime="application/pdf",
     use_container_width=True
 )
+
 
 
 
