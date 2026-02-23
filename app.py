@@ -686,38 +686,38 @@ preview_css = f"""
     --accent3:{theme["accent_dark"]};
   }}
   body{{ margin:0; padding:0; background:#fff; font-family: Arial, sans-serif; }}
-  .preview-frame{ border:2px solid rgba(47,94,142,0.20); border-radius:16px; overflow:hidden; background:white; }
-  .inv-bar{ height:14px; background: linear-gradient(90deg, var(--accent), var(--accent2)); }
-  .inv-top{ padding:14px 18px; display:flex; justify-content:space-between; gap:18px; }
-  .inv-top-left{ font-size:12px; line-height:1.6; color:#333; }
-  .inv-top-right{ text-align:right; min-width:320px; }
-  .inv-title{ font-size:22px; font-weight:900; letter-spacing:0.8px; color:#42526b; }
-  .inv-note{ font-size:11px; color:#666; margin-top:4px; }
-  .inv-meta{ margin-top:10px; border:1px solid #d9d9d9; border-radius:10px; overflow:hidden; }
-  .inv-meta-row{ display:flex; justify-content:space-between; padding:10px 12px; border-top:1px solid #e6e6e6; font-size:12px; background:#fbfdff; }
-  .inv-meta-row:first-child{ border-top:none; }
-  .inv-meta-row b{ color:#2a3b57; }
-  .inv-body{ padding:14px 18px 18px 18px; }
-  .section{ margin-top:12px; }
-  .section-title{ font-size:12px; font-weight:900; color:var(--accent3); margin-bottom:8px; }
-  .lines{ font-size:12px; line-height:1.6; color:#333; }
-  .hr{ height:1px; background:#ededed; margin:14px 0; }
-  .kv-grid{ display:grid; grid-template-columns: 240px 14px 1fr; row-gap:8px; font-size:12px; line-height:1.5; }
-  .kv-grid .c{ text-align:center; color:#666; }
-  .table{ margin-top:14px; border:1px solid #d9d9d9; border-radius:10px; overflow:hidden; }
-  .thead{ display:flex; justify-content:space-between; background: linear-gradient(90deg, var(--accent), var(--accent2)); color:white; font-weight:900; font-size:12px; }
-  .thead div{ padding:10px 12px; }
-  .trow{ display:flex; justify-content:space-between; gap:12px; border-top:1px solid #eee; font-size:12px; }
-  .trow:nth-child(odd){ background:#f7faff; }
-  .trow div{ padding:10px 12px; }
-  .wdesc{ flex:1 1 auto; }
-  .wamt{ width:180px; text-align:right; white-space:nowrap; }
-  .rightlabel{ text-align:right; padding-right:30px; font-weight:700; color:#2a3b57; }
-  .totalrow{ background:#eef5ff; font-weight:900; }
-  .amountwords{ margin-top:12px; font-size:12px; line-height:1.6; }
-  .signature{ margin-top:26px; display:flex; justify-content:flex-end; }
-  .sigbox{ width:300px; font-size:12px; line-height:1.8; }
-  .sigbox b{ color:#2a3b57; }
+  .preview-frame{{ border:2px solid rgba(47,94,142,0.20); border-radius:16px; overflow:hidden; background:white; }}
+  .inv-bar{{ height:14px; background: linear-gradient(90deg, var(--accent), var(--accent2)); }}
+  .inv-top{{ padding:14px 18px; display:flex; justify-content:space-between; gap:18px; }}
+  .inv-top-left{{ font-size:12px; line-height:1.6; color:#333; }}
+  .inv-top-right{{ text-align:right; min-width:320px; }}
+  .inv-title{{ font-size:22px; font-weight:900; letter-spacing:0.8px; color:#42526b; }}
+  .inv-note{{ font-size:11px; color:#666; margin-top:4px; }}
+  .inv-meta{{ margin-top:10px; border:1px solid #d9d9d9; border-radius:10px; overflow:hidden; }}
+  .inv-meta-row{{ display:flex; justify-content:space-between; padding:10px 12px; border-top:1px solid #e6e6e6; font-size:12px; background:#fbfdff; }}
+  .inv-meta-row:first-child{{ border-top:none; }}
+  .inv-meta-row b{{ color:#2a3b57; }}
+  .inv-body{{ padding:14px 18px 18px 18px; }}
+  .section{{ margin-top:12px; }}
+  .section-title{{ font-size:12px; font-weight:900; color:var(--accent3); margin-bottom:8px; }}
+  .lines{{ font-size:12px; line-height:1.6; color:#333; }}
+  .hr{{ height:1px; background:#ededed; margin:14px 0; }}
+  .kv-grid{{ display:grid; grid-template-columns: 240px 14px 1fr; row-gap:8px; font-size:12px; line-height:1.5; }}
+  .kv-grid .c{{ text-align:center; color:#666; }}
+  .table{{ margin-top:14px; border:1px solid #d9d9d9; border-radius:10px; overflow:hidden; }}
+  .thead{{ display:flex; justify-content:space-between; background: linear-gradient(90deg, var(--accent), var(--accent2)); color:white; font-weight:900; font-size:12px; }}
+  .thead div{{ padding:10px 12px; }}
+  .trow{{ display:flex; justify-content:space-between; gap:12px; border-top:1px solid #eee; font-size:12px; }}
+  .trow:nth-child(odd){{ background:#f7faff; }}
+  .trow div{{ padding:10px 12px; }}
+  .wdesc{{ flex:1 1 auto; }}
+  .wamt{{ width:180px; text-align:right; white-space:nowrap; }}
+  .rightlabel{{ text-align:right; padding-right:30px; font-weight:700; color:#2a3b57; }}
+  .totalrow{{ background:#eef5ff; font-weight:900; }}
+  .amountwords{{ margin-top:12px; font-size:12px; line-height:1.6; }}
+  .signature{{ margin-top:26px; display:flex; justify-content:flex-end; }}
+  .sigbox{{ width:300px; font-size:12px; line-height:1.8; }}
+  .sigbox b{{ color:#2a3b57; }}
 </style>
 """
 
@@ -847,6 +847,7 @@ st.download_button(
     mime="application/pdf",
     use_container_width=True
 )
+
 
 
 
