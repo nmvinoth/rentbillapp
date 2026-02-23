@@ -192,6 +192,30 @@ PEOPLE = {
     ),
 }
 
+THEMES = {
+    "S.N.PREMA": {  # ✅ keep EXACTLY your current blue theme
+        "primary": "#6FA8DC",
+        "secondary": "#9FC5E8",
+        "accent_dark": "#2F5E8E",
+        "light_bg": "#EEF5FF",
+        "ui_bg": "#FFFFFF",   # ✅ keep current UI background (no change for Prema)
+    },
+    "S.N.Geetha": {  # light green
+        "primary": "#7BC47F",
+        "secondary": "#B7E4C7",
+        "accent_dark": "#2D6A4F",
+        "light_bg": "#E9F7EF",
+        "ui_bg": "#F3FCF6",
+    },
+    "N.RAJENDRAN": {  # light brown
+        "primary": "#C8A27E",
+        "secondary": "#E6D2C3",
+        "accent_dark": "#7A5230",
+        "light_bg": "#F7EFE9",
+        "ui_bg": "#FBF5F0",
+    },
+}
+
 # -----------------------------------
 # HELPERS
 # -----------------------------------
@@ -611,6 +635,7 @@ if to_date < from_date:
     st.warning("To Date is earlier than From Date. Please correct it.")
 
 person = PEOPLE[selected_name]
+theme = THEMES.get(selected_name, THEMES["S.N.PREMA"])
 
 # Invoice date = 1st of month of From Date
 invoice_date = from_date.replace(day=1)
@@ -805,6 +830,7 @@ st.download_button(
     mime="application/pdf",
     use_container_width=True
 )
+
 
 
 
