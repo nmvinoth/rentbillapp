@@ -198,7 +198,7 @@ THEMES = {
         "secondary": "#9FC5E8",
         "accent_dark": "#2F5E8E",
         "light_bg": "#EEF5FF",
-        "ui_bg": "#FFFFFF",   # ✅ keep current UI background (no change for Prema)
+        "ui_bg": "#F4F9FF",   # ✅ keep current UI background (no change for Prema)
     },
     "S.N.Geetha": {  # light green
         "primary": "#7BC47F",
@@ -641,9 +641,23 @@ theme = THEMES.get(selected_name, THEMES["S.N.PREMA"])
 st.markdown(
     f"""
     <style>
-    .stApp {{
-      background: {theme["ui_bg"]};
-    }}
+      :root {{
+        --accent: {theme["primary"]};
+        --accent2: {theme["secondary"]};
+
+        --kpi1: {theme.get("kpi1", theme["light_bg"])};
+        --kpi2: {theme.get("kpi2", theme["light_bg"])};
+        --kpi3: {theme.get("kpi3", theme["light_bg"])};
+        --kpi4: {theme.get("kpi4", theme["light_bg"])};
+      }}
+
+      .stApp {{
+        background: {theme["ui_bg"]};
+      }}
+
+      div[data-testid="stDownloadButton"] > button {{
+        background: linear-gradient(90deg, var(--accent), var(--accent2)) !important;
+      }}
     </style>
     """,
     unsafe_allow_html=True
@@ -847,6 +861,7 @@ st.download_button(
     mime="application/pdf",
     use_container_width=True
 )
+
 
 
 
